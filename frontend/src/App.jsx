@@ -1,17 +1,22 @@
-import { useEffect, useState } from "react";
-import { getHealth } from "./api";
-
+import './App.css'
+import {SignedIn, SignedOut, SignInButton, SignOutButton, UserButton} from '@clerk/clerk-react'
 function App() {
-  const [status, setStatus] = useState("");
-
-  useEffect(() => {
-    getHealth().then(data => setStatus(data.msg));
-  }, []);
 
   return (
     <div>
-      <h1>Hireloop Frontend</h1>
-      <p>Backend status: {status}</p>
+      <h1>Welcome to our Page</h1>
+
+      <SignedOut >
+        <SignInButton mode='modal'>
+          <button>Login</button>
+        </SignInButton>
+      </SignedOut>
+
+      <SignedIn>
+        <SignOutButton />
+      </SignedIn>
+
+      <UserButton />
     </div>
   );
 }

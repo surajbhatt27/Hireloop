@@ -7,19 +7,14 @@ import { functions, inngest } from './lib/inngest.js';
 
 const app = express()
 
-app.use(
-    "/api/inngest",
-    express.raw({ type: "*/*" }),
-    serve({ client: inngest, functions })
-);
+app.use(express.json())
 
 app.use(cors({
     origin: ENV.CORS || "http://localhost:5173",
     credentials: true // Server allows a broswer to include cookies on req.
 }));
 
-app.use(express.json())
-
+app.use("/api/inngest", serve({client:inngest, functions}))
 
 app.get('/health', (req, res) => {
     res.status(200).json({msg: "Server is up and running"})

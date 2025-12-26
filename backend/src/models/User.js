@@ -15,7 +15,7 @@ const userSchema = new Schema(
             type: String,
             default: ""
         },
-        clearkId: {
+        clerkId: {
             type: String,
             required: true,
             unique: true

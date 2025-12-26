@@ -7,7 +7,11 @@ import { functions, inngest } from './lib/inngest.js';
 
 const app = express()
 
-app.use('/api/inngest', serve({client: inngest, functions}))
+app.use(
+    "/api/inngest",
+    express.raw({ type: "*/*" }),
+    serve({ client: inngest, functions })
+);
 
 app.use(cors({
     origin: ENV.CORS || "http://localhost:5173",

@@ -12,7 +12,7 @@ export async function createSession(req, res) {
         }
 
         //generate a unique call id for the stream video
-        const callId = `session_${Date.now()}_${Map.random().toString(36).substring(7)}`
+        const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
 
         // create session in db
         const session = await Session.create({problem, difficulty, host:userId, callId})
@@ -42,7 +42,7 @@ export async function createSession(req, res) {
     }
 }
 
-export async function getActiveSesions(_, res) {
+export async function getActiveSessions(_, res) {
     try {
         const sessions = await Session.find({status: "active"})
         .populate("host", "name profileImage email clerkId")
@@ -78,8 +78,8 @@ export async function getSessionById(req, res) {
     try {
         const {id} = req.params
         const session = await Session.findById(id)
-        .populate("host", "name, email, profileImage, clerkId")
-        .populate("participant", "host", "name, email, profileImage, clerkId")
+        .populate("host", "name email profileImage, clerkId")
+        .populate("participant", "host", "name email profileImage clerkId")
 
         if(!session) return res.status(404).json({message: "Session not found"})
 

@@ -3,7 +3,7 @@ import { protectRoute } from '../middleware/protectRoute.js'
 import { 
     createSession, 
     endSession, 
-    getActiveSesions, 
+    getActiveSessions, 
     getMyRecentSessions, 
     getSessionById, 
     joinSession 
@@ -12,7 +12,7 @@ import {
 const router = express.Router()
 
 router.post('/', protectRoute, createSession)
-router.post('/active', protectRoute, getActiveSesions)
+router.get('/active', protectRoute, getActiveSessions)
 router.get('/my-recent', protectRoute, getMyRecentSessions)
 
 router.get('/:id', protectRoute, getSessionById)

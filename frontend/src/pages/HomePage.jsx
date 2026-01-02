@@ -80,7 +80,7 @@ Get live feedback, improve problem-solving, and interview with confidence.</p>
                         </div>
 
                         {/**Stats */}
-                        <div className='stats stats-horizontal lg:stats-horizontal bg-base-100 shadow-lg'>
+                        <div className='stats stats-vertical lg:stats-horizontal bg-base-100 shadow-lg'>
                             <div className='stat'>
                                 <div className='stat-value text-primary'>250+</div>
                                 <div state-title>Practice Qs</div>

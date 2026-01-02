@@ -1,2 +1,86 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+@plugin "daisyui/theme" {
+    name: "pairup";
+    default: true;
+    prefersdark: true; /* Changed to prefer dark */
+    color-scheme: dark;
+
+    /* Dark theme colors */
+    --color-base-100: oklch(15% 0.02 260); /* Dark background */
+    --color-base-200: oklch(20% 0.03 260); /* Slightly lighter dark */
+    --color-base-300: oklch(25% 0.04 260); /* For deeper layers */
+    --color-base-content: oklch(90% 0.01 260); /* Light text on dark */
+    
+    /* Primary Colors - Brighter for contrast on dark */
+    --color-primary: oklch(65% 0.22 260); /* Brighter blue */
+    --color-primary-content: oklch(20% 0.05 260);
+    
+    /* Secondary Colors */
+    --color-secondary: oklch(75% 0.18 200);
+    --color-secondary-content: oklch(20% 0.05 200);
+    
+    /* Accent Colors */
+    --color-accent: oklch(70% 0.25 140);
+    --color-accent-content: oklch(20% 0.05 140);
+    
+    /* Neutral Colors */
+    --color-neutral: oklch(40% 0.05 260);
+    --color-neutral-content: oklch(90% 0.01 260);
+    
+    /* Status Colors */
+    --color-info: oklch(75% 0.15 220);
+    --color-info-content: oklch(20% 0.05 220);
+    
+    --color-success: oklch(70% 0.25 140);
+    --color-success-content: oklch(20% 0.05 140);
+    
+    --color-warning: oklch(85% 0.25 80);
+    --color-warning-content: oklch(20% 0.05 80);
+    
+    --color-error: oklch(70% 0.25 30);
+    --color-error-content: oklch(20% 0.05 30);
+    
+    /* PairUp Specific Theme Variables */
+    --color-code-editor: oklch(20% 0.02 260);
+    --color-code-editor-content: oklch(90% 0.01 260);
+    --color-video-background: oklch(5% 0.01 260);
+    
+    /* Border Radius  */
+    --radius-selector: 0.75rem;
+    --radius-box: 1rem;
+    
+    /* Effects */
+    --depth: 0.2;
+    --shadow-video: 0 20px 25px -5px oklch(0 0 0 / 0.5), 
+                    0 10px 10px -5px oklch(0 0 0 / 0.3);
+    --shadow-code: 0 4px 6px -1px oklch(0 0 0 / 0.3);
+}
+
+/* PairUp Theme Variables for dark mode */
+:root {
+    --pairup-video-grid-bg: oklch(5% 0.01 260);
+    --pairup-chat-bubble-self: oklch(65% 0.22 260);
+    --pairup-chat-bubble-other: oklch(30% 0.03 260);
+    --pairup-code-highlight: oklch(30% 0.05 260);
+    --pairup-timer-warning: oklch(85% 0.25 80);
+}
+
+/* PairUp Theme Variables for CSS Custom Properties */
+:root {
+    --pairup-video-grid-bg: oklch(10% 0.01 260);
+    --pairup-chat-bubble-self: oklch(55% 0.22 260);
+    --pairup-chat-bubble-other: oklch(90% 0.02 260);
+    --pairup-code-highlight: oklch(95% 0.05 260);
+    --pairup-timer-warning: oklch(80% 0.25 80);
+    --pairup-connection-active: oklch(65% 0.25 140);
+    --pairup-connection-lost: oklch(65% 0.25 30);
+}
+
+
+@layer base {
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
+}

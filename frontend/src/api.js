@@ -1,10 +1,6 @@
-import axios from "axios";
-
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
-});
+import axiosInstance from "../lib/axios";
 
 export const getHealth = async () => {
-    const res = await api.get("/health");
+    const res = await axiosInstance.get("/health");
     return res.data;
 };

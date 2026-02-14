@@ -1,6 +1,7 @@
 import {Link, useLocation} from "react-router"
 import {BookOpenIcon, GitMerge, LayoutDashboardIcon} from "lucide-react"
 import { UserButton } from "@clerk/clerk-react";
+
 function Navbar() {
     const location = useLocation()
     const isActive = (path) => location.pathname === path;

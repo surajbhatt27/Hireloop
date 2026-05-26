@@ -50,7 +50,7 @@ export default function SessionPage() {
         if (isHost || isParticipant) return
 
         joinSessionMutation.mutate(id, { onSuccess: refetch })
-    }, [session, user, loadingSession, isHost, isParticipant, id])
+    }, [session, user, loadingSession, isHost, isParticipant, id, joinSessionMutation, refetch])
 
     useEffect(() => {
         if (!session || loadingSession) return

@@ -36,7 +36,9 @@ function DashboardPage() {
     )
     }
     
-    const activeSessions = activeSessionsData?.sessions || [];
+    const activeSessions = (activeSessionsData?.sessions || []).filter(
+        session => session.status === "active"
+    );
     const recentSessions = recentSessionsData?.sessions || [];
 
     const isUserInSession = (session) => {

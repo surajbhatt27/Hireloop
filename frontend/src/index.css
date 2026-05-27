@@ -1,86 +1,433 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin "daisyui";
+
 @plugin "daisyui/theme" {
-    name: "pairup";
+    name: "blackmarket";
     default: true;
-    prefersdark: true; /* Changed to prefer dark */
+    prefersdark: true;
     color-scheme: dark;
 
-    /* Dark theme colors */
-    --color-base-100: oklch(15% 0.02 260); /* Dark background */
-    --color-base-200: oklch(20% 0.03 260); /* Slightly lighter dark */
-    --color-base-300: oklch(25% 0.04 260); /* For deeper layers */
-    --color-base-content: oklch(90% 0.01 260); /* Light text on dark */
-    
-    /* Primary Colors - Brighter for contrast on dark */
-    --color-primary: oklch(65% 0.22 260); /* Brighter blue */
-    --color-primary-content: oklch(20% 0.05 260);
-    
-    /* Secondary Colors */
-    --color-secondary: oklch(75% 0.18 200);
-    --color-secondary-content: oklch(20% 0.05 200);
-    
-    /* Accent Colors */
-    --color-accent: oklch(70% 0.25 140);
-    --color-accent-content: oklch(20% 0.05 140);
-    
-    /* Neutral Colors */
-    --color-neutral: oklch(40% 0.05 260);
-    --color-neutral-content: oklch(90% 0.01 260);
-    
-    /* Status Colors */
-    --color-info: oklch(75% 0.15 220);
-    --color-info-content: oklch(20% 0.05 220);
-    
-    --color-success: oklch(70% 0.25 140);
-    --color-success-content: oklch(20% 0.05 140);
-    
-    --color-warning: oklch(85% 0.25 80);
-    --color-warning-content: oklch(20% 0.05 80);
-    
-    --color-error: oklch(70% 0.25 30);
-    --color-error-content: oklch(20% 0.05 30);
-    
-    /* PairUp Specific Theme Variables */
-    --color-code-editor: oklch(20% 0.02 260);
-    --color-code-editor-content: oklch(90% 0.01 260);
-    --color-video-background: oklch(5% 0.01 260);
-    
-    /* Border Radius  */
-    --radius-selector: 0.75rem;
+    /* =====================================================
+        BASE BACKGROUNDS
+    ===================================================== */
+
+    --color-base-100: oklch(7% 0.008 145);
+    --color-base-200: oklch(10% 0.012 145);
+    --color-base-300: oklch(15% 0.016 145);
+    --color-base-content: oklch(93% 0.01 140);
+
+    /* =====================================================
+        PRIMARY COLOR
+    ===================================================== */
+
+    --color-primary: oklch(78% 0.19 145); /* radioactive green */
+    --color-primary-content: oklch(8% 0.01 145);
+
+    /* =====================================================
+        SECONDARY COLOR
+    ===================================================== */
+
+    --color-secondary: oklch(72% 0.14 180); /* toxic cyan */
+    --color-secondary-content: oklch(10% 0.01 180);
+
+    /* =====================================================
+        ACCENT COLOR
+    ===================================================== */
+
+    --color-accent: oklch(82% 0.18 95); /* warning yellow */
+    --color-accent-content: oklch(12% 0.01 95);
+
+    /* =====================================================
+        NEUTRAL COLORS
+    ===================================================== */
+
+    --color-neutral: oklch(20% 0.01 145);
+    --color-neutral-content: oklch(90% 0.01 145);
+
+    /* =====================================================
+        STATUS COLORS
+    ===================================================== */
+
+    --color-info: oklch(74% 0.12 220);
+    --color-info-content: oklch(12% 0.01 220);
+
+    --color-success: oklch(80% 0.16 145);
+    --color-success-content: oklch(10% 0.01 145);
+
+    --color-warning: oklch(86% 0.16 90);
+    --color-warning-content: oklch(14% 0.01 90);
+
+    --color-error: oklch(70% 0.22 25);
+    --color-error-content: oklch(10% 0.01 25);
+
+    /* =====================================================
+        BORDER RADIUS
+    ===================================================== */
+
+    --radius-selector: 0.4rem;
+    --radius-field: 0.6rem;
     --radius-box: 1rem;
-    
-    /* Effects */
-    --depth: 0.2;
-    --shadow-video: 0 20px 25px -5px oklch(0 0 0 / 0.5), 
-                    0 10px 10px -5px oklch(0 0 0 / 0.3);
-    --shadow-code: 0 4px 6px -1px oklch(0 0 0 / 0.3);
+
+    /* =====================================================
+        SHADOW DEPTH
+    ===================================================== */
+
+    --depth: 1;
 }
 
-/* PairUp Theme Variables for dark mode */
-:root {
-    --pairup-video-grid-bg: oklch(5% 0.01 260);
-    --pairup-chat-bubble-self: oklch(65% 0.22 260);
-    --pairup-chat-bubble-other: oklch(30% 0.03 260);
-    --pairup-code-highlight: oklch(30% 0.05 260);
-    --pairup-timer-warning: oklch(85% 0.25 80);
-}
-
-/* PairUp Theme Variables for CSS Custom Properties */
-:root {
-    --pairup-video-grid-bg: oklch(10% 0.01 260);
-    --pairup-chat-bubble-self: oklch(55% 0.22 260);
-    --pairup-chat-bubble-other: oklch(90% 0.02 260);
-    --pairup-code-highlight: oklch(95% 0.05 260);
-    --pairup-timer-warning: oklch(80% 0.25 80);
-    --pairup-connection-active: oklch(65% 0.25 140);
-    --pairup-connection-lost: oklch(65% 0.25 30);
-}
-
+/* =========================================================
+    GLOBAL CUSTOM STYLES
+========================================================= */
 
 @layer base {
-    button:not(:disabled),
-    [role="button"]:not(:disabled) {
-        cursor: pointer;
+    html {
+        min-height: 100%;
+
+        background:
+            radial-gradient(
+                circle at top left,
+                oklch(30% 0.06 145 / 0.12),
+                transparent 30%
+            ),
+            linear-gradient(
+                180deg,
+                oklch(8% 0.008 145),
+                oklch(4% 0.005 145)
+            );
+    }
+
+    body {
+        color: var(--color-base-content);
+
+        font-family:
+            "JetBrains Mono",
+            "IBM Plex Mono",
+            monospace;
+
+        letter-spacing: -0.02em;
+
+        overflow-x: hidden;
+
+        text-rendering: geometricPrecision;
+    }
+
+    * {
+        border-color: oklch(100% 0 0 / 0.04);
+    }
+
+    ::selection {
+        background: oklch(78% 0.19 145 / 0.25);
+        color: black;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background:
+            linear-gradient(
+                180deg,
+                oklch(78% 0.19 145),
+                oklch(72% 0.14 180)
+            );
+
+        border-radius: 999px;
+    }
+}
+
+@layer components {
+    .market-card {
+        position: relative;
+
+        overflow: hidden;
+
+        background:
+            linear-gradient(
+                145deg,
+                oklch(12% 0.014 145 / 0.92),
+                oklch(8% 0.01 145 / 0.98)
+            );
+
+        border:
+            1px solid
+            oklch(78% 0.19 145 / 0.08);
+
+        box-shadow:
+            0 0 0 1px oklch(78% 0.19 145 / 0.04),
+            0 12px 50px oklch(0% 0 0 / 0.7),
+            0 0 24px oklch(78% 0.19 145 / 0.08);
+
+        backdrop-filter: blur(18px);
+    }
+
+    .market-card::before {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        background:
+            repeating-linear-gradient(
+                180deg,
+                transparent 0px,
+                transparent 2px,
+                oklch(78% 0.19 145 / 0.018) 3px
+            );
+
+        opacity: 0.6;
+
+        pointer-events: none;
+    }
+
+    .market-card::after {
+        content: "ENCRYPTED";
+
+        position: absolute;
+        top: 1rem;
+        right: -2rem;
+
+        padding: 0.2rem 3rem;
+
+        font-size: 0.65rem;
+        font-weight: 700;
+
+        color: black;
+
+        background: oklch(78% 0.19 145);
+
+        transform: rotate(35deg);
+
+        opacity: 0.8;
+    }
+
+    .cult-text {
+        background:
+            linear-gradient(
+                90deg,
+                oklch(82% 0.18 95),
+                oklch(78% 0.19 145),
+                oklch(72% 0.14 180)
+            );
+
+        background-size: 200% auto;
+
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        animation: cultFlow 5s linear infinite;
+
+        text-shadow:
+            0 0 18px oklch(78% 0.19 145 / 0.18);
+    }
+
+    .terminal-input {
+        background: oklch(10% 0.01 145);
+
+        border:
+            1px solid
+            oklch(78% 0.19 145 / 0.12);
+
+        color: oklch(92% 0.01 145);
+
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .terminal-input:focus {
+        border-color:
+            oklch(78% 0.19 145 / 0.45);
+
+        box-shadow:
+            0 0 0 4px oklch(78% 0.19 145 / 0.08),
+            0 0 18px oklch(78% 0.19 145 / 0.14);
+
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        position: relative;
+
+        overflow: hidden;
+
+        border: none;
+
+        background:
+            linear-gradient(
+                135deg,
+                oklch(78% 0.19 145),
+                oklch(72% 0.14 180)
+            );
+
+        color: black;
+
+        font-weight: 700;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.08em;
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 0 24px oklch(78% 0.19 145 / 0.35),
+            0 0 50px oklch(72% 0.14 180 / 0.16);
+    }
+
+    .btn-primary::before {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent,
+                oklch(100% 0 0 / 0.18),
+                transparent
+            );
+
+        transform: translateX(-100%);
+    }
+
+    .btn-primary:hover::before {
+        animation: scan 1s linear;
+    }
+
+    .wallet-tag {
+        background:
+            linear-gradient(
+                135deg,
+                oklch(18% 0.016 145 / 0.9),
+                oklch(12% 0.012 145 / 0.9)
+            );
+
+        border:
+            1px solid
+            oklch(78% 0.19 145 / 0.1);
+
+        color: oklch(82% 0.18 95);
+
+        text-transform: uppercase;
+
+        font-size: 0.7rem;
+
+        letter-spacing: 0.08em;
+    }
+
+    .glass-navbar {
+        background:
+            oklch(8% 0.008 145 / 0.72);
+
+        backdrop-filter: blur(22px);
+
+        border-bottom:
+            1px solid
+            oklch(78% 0.19 145 / 0.08);
+    }
+}
+
+@layer utilities {
+    .grid-noise {
+        background-image:
+            linear-gradient(
+                oklch(100% 0 0 / 0.03) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                90deg,
+                oklch(100% 0 0 / 0.03) 1px,
+                transparent 1px
+            );
+
+        background-size: 24px 24px;
+    }
+
+    .glow-green {
+        box-shadow:
+            0 0 24px oklch(78% 0.19 145 / 0.35);
+    }
+
+    .glow-cyan {
+        box-shadow:
+            0 0 24px oklch(72% 0.14 180 / 0.28);
+    }
+
+    .animate-glitch {
+        animation: glitch 2.5s infinite;
+    }
+
+    .typing::after {
+        content: "_";
+        animation: blink 1s step-end infinite;
+    }
+
+    .noise::before {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        opacity: 0.025;
+
+        pointer-events: none;
+
+        background-image:
+            radial-gradient(circle, white 1px, transparent 1px);
+
+        background-size: 16px 16px;
+    }
+
+    @keyframes cultFlow {
+        to {
+            background-position: 200% center;
+        }
+    }
+
+    @keyframes scan {
+        from {
+            transform: translateX(-100%);
+        }
+
+        to {
+            transform: translateX(100%);
+        }
+    }
+
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes glitch {
+        0%, 100% {
+            transform: translate(0);
+        }
+
+        20% {
+            transform: translate(-1px, 1px);
+        }
+
+        40% {
+            transform: translate(1px, -1px);
+        }
+
+        60% {
+            transform: translate(-1px, 0px);
+        }
+
+        80% {
+            transform: translate(1px, 1px);
+        }
     }
 }

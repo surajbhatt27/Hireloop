@@ -66,6 +66,27 @@ function CreateSessionModel({
                         </p>
                     </div>
 
+                    <div className="space-y-2">
+                        <label className="label">
+                            <span className="label-text font-semibold">Session Duration (Optional)</span>
+                            <span className="label-text-alt text-base-content/50">Leave empty for unlimited</span>
+                        </label>
+                        
+                        <select 
+                            className="select w-full"
+                            value={roomConfig.duration || ""}
+                            onChange={(e) => setRoomConfig({...roomConfig, duration: e.target.value ? parseInt(e.target.value) : null})}
+                        >
+                            <option value="">No time limit</option>
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">1 hour</option>
+                            <option value="90">1.5 hours</option>
+                            <option value="120">2 hours</option>
+                        </select>
+                    </div>
+
                     {/** Room Summary */}
                     {roomConfig.problem && (
                         <div className="alert alert-success">

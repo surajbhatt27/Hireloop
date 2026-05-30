@@ -3,7 +3,7 @@ import {chatClient, streamClient} from "../lib/stream.js"
 
 export async function createSession(req, res) {
     try {
-        const {problem, difficulty, isPrivate} = req.body
+        const {problem, difficulty, isPrivate, duration} = req.body
         const userId = req.user._id
         const clerkId = req.user.clerkId
 
@@ -15,7 +15,7 @@ export async function createSession(req, res) {
         const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
 
         // create session in db
-        const session = await Session.create({problem, difficulty, host:userId, callId, isPrivate: isPrivate || false })
+        const session = await Session.create({problem, difficulty, host:userId, callId, isPrivate: isPrivate || false, duration: duration || null, startedAt: duration ? new Date() : null })
 
         // create stream video call
         await streamClient.video.call("default", callId).getOrCreate({
@@ -118,6 +118,16 @@ export async function getSessionById(req, res) {
 
         if(!session) return res.status(404).json({message: "Session not found"})
 
+        // Check if session has expired
+        if(session.duration && session.startedAt && session.status === "active") {
+            const expiresAt = new Date(session.startedAt.getTime() + session.duration * 60000)
+            if(new Date() > expiresAt) {
+                session.status = "completed"
+                session.endedAt = new Date()
+                await session.save()
+            }
+        }
+
         res.status(200).json({session})
     }catch (error) {
         console.log("Error in getSessionById controller:", error.message);
@@ -147,6 +157,11 @@ export async function joinSession(req, res) {
         if(session.participant) return res.status(409).json({message: "Session is full"})
 
         session.participant = userId
+
+        if(session.duration && !session.startedAt) {
+            session.startedAt = new Date()
+        }
+
         await session.save()
 
         const channel = chatClient.channel("messaging", session.callId)

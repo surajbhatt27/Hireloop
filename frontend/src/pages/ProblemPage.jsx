@@ -9,6 +9,7 @@ import OutputPanel from '../components/OutputPanel'
 import {executeCode} from '../lib/jdoodle.js'
 import toast from 'react-hot-toast'
 import confetti from "canvas-confetti";
+import Stopwatch from "../components/Stopwatch";
 
 function ProblemPage() {
     const {id} = useParams()
@@ -20,8 +21,13 @@ function ProblemPage() {
 
     const [output, setOutput] = useState(null)
     const [isRunning, setIsRunning] = useState(false)
+    const [_, setStopwatchTime] = useState(0);
 
     const currentProblem = PROBLEMS[currentProblemId]
+
+    const handleTimeUpdate = (seconds) => {
+        setStopwatchTime(seconds);
+    };
 
     // update problem when url param changes
     useEffect(() => {
@@ -112,6 +118,10 @@ function ProblemPage() {
     return (
         <div className='h-screen bg-base-100 flex flex-col'>
             <Navbar />
+
+            <div className="border-b border-base-300 px-4 py-2 flex justify-end">
+                <Stopwatch onTimeUpdate={handleTimeUpdate} autoStart={false} />
+            </div>
 
             <div className='flex-1'>
                 <PanelGroup direction='horizontal'>

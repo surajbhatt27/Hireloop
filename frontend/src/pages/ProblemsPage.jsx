@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar"
 import { PROBLEMS } from "../data/problems.js"
 import { ChevronRightIcon, Code2Icon, FilterIcon, XIcon } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils.js";
+import ProblemOfTheDay from "../components/ProblemOfTheDay";
 
 function ProblemsPage() {
   const problems = Object.values(PROBLEMS);
@@ -67,6 +68,7 @@ function ProblemsPage() {
             Sharpen your coding skills with these curated problems
           </p>
         </div>
+        <ProblemOfTheDay problems={problems} />
 
         {/* STATS FOOTER */}
         <div className="mb-8 card bg-base-100 shadow-lg w-full">

@@ -51,6 +51,21 @@ function CreateSessionModel({
                         </select>
                     </div>
 
+                    <div className="space-y-2">
+                        <label className="label cursor-pointer justify-start gap-4">
+                            <span className="label-text font-semibold">Make this session private?</span>
+                            <input 
+                                type="checkbox" 
+                                className="toggle toggle-primary"
+                                checked={roomConfig.isPrivate}
+                                onChange={(e) => setRoomConfig({...roomConfig, isPrivate: e.target.checked})}
+                            />
+                        </label>
+                        <p className="text-xs text-base-content/50">
+                            Private sessions won't appear in the active sessions list. Only people with the invite link can join.
+                        </p>
+                    </div>
+
                     {/** Room Summary */}
                     {roomConfig.problem && (
                         <div className="alert alert-success">

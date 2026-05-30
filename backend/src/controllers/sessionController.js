@@ -3,7 +3,7 @@ import {chatClient, streamClient} from "../lib/stream.js"
 
 export async function createSession(req, res) {
     try {
-        const {problem, difficulty} = req.body
+        const {problem, difficulty, isPrivate} = req.body
         const userId = req.user._id
         const clerkId = req.user.clerkId
 
@@ -15,7 +15,7 @@ export async function createSession(req, res) {
         const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
 
         // create session in db
-        const session = await Session.create({problem, difficulty, host:userId, callId})
+        const session = await Session.create({problem, difficulty, host:userId, callId, isPrivate: isPrivate || false })
 
         // create stream video call
         await streamClient.video.call("default", callId).getOrCreate({
@@ -44,7 +44,7 @@ export async function createSession(req, res) {
 
 export async function getActiveSessions(_, res) {
     try {
-        const sessions = await Session.find({status: "active"})
+        const sessions = await Session.find({status: "active", isPrivate: false })
         .populate("host", "name profileImage email clerkId")
         .populate("participant", "name profileImage email clerkId")
         .sort({createdAt:-1})
@@ -53,6 +53,40 @@ export async function getActiveSessions(_, res) {
         res.status(200).json({sessions})
     } catch (error) {
         console.log("Error in getActiveSession controller:", error.message);
+        res.status(500).json({message: "Internal server Error"})
+    }
+}
+
+// join via invite link (by ID)
+export async function joinPrivateSession(req, res) {
+    try {
+        const {id} = req.params
+        const userId = req.user._id
+        const clerkId = req.user.clerkId
+
+        const session = await Session.findById(id)
+
+        if(!session) return res.status(404).json({message: "Session not found"})
+
+        if(session.status !== "active") {
+            return res.status(400).json({message: "Cannot join a completed session"})
+        }
+
+        if(session.host.toString() === userId.toString()) {
+            return res.status(400).json({message: "Host cannot join their own session"})
+        }
+        
+        if(session.participant) return res.status(409).json({message: "Session is full"})
+
+        session.participant = userId
+        await session.save()
+
+        const channel = chatClient.channel("messaging", session.callId)
+        await channel.addMembers([clerkId])
+
+        res.status(200).json({session})
+    } catch (error) {
+        console.log("Error in joinPrivateSession controller:", error.message);
         res.status(500).json({message: "Internal server Error"})
     }
 }

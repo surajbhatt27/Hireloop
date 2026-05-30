@@ -6,6 +6,7 @@ import {
     getActiveSessions, 
     getMyRecentSessions, 
     getSessionById, 
+    joinPrivateSession, 
     joinSession 
 } from '../controllers/sessionController.js'
 
@@ -13,6 +14,7 @@ const router = express.Router()
 
 router.post('/', protectRoute, createSession)
 router.get('/active', protectRoute, getActiveSessions)
+router.post('/:id/join-private', protectRoute, joinPrivateSession)
 router.get('/my-recent', protectRoute, getMyRecentSessions)
 
 router.get('/:id', protectRoute, getSessionById)

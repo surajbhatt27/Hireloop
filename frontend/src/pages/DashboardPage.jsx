@@ -9,12 +9,13 @@ import StatsCards from "../components/StatsCards"
 import ActiveSessions from "../components/ActiveSessions"
 import RecentSessions from "../components/RecentSessions"
 import CreateSessionModel from "../components/CreateSessionModel"
+import toast from "react-hot-toast"
 
 function DashboardPage() {
     const navigate = useNavigate()
     const {user} = useUser()
     const [showCreateModel, setShowCreateModel] = useState(false)
-    const [roomConfig, setRoomConfig] = useState({ problem: "", difficulty: ""})
+    const [roomConfig, setRoomConfig] = useState({ problem: "", difficulty: "", isPrivate: false})
 
     const createSessionMutation = useCreateSession()
 
@@ -25,15 +26,28 @@ function DashboardPage() {
         if(!roomConfig.problem || !roomConfig.difficulty) return
 
         createSessionMutation.mutate({
-            problem: roomConfig.problem, difficulty: roomConfig.difficulty.toLowerCase()
-        },
-        {
+            problem: roomConfig.problem, 
+            difficulty: roomConfig.difficulty.toLowerCase(),
+            isPrivate: roomConfig.isPrivate || false
+        }, {
             onSuccess: (data) => {
                 setShowCreateModel(false)
+                
+                // If private session
+                if(roomConfig.isPrivate) {
+                    const inviteLink = `${window.location.origin}/session/${data.session._id}`
+                    const copyAndJoin = confirm(
+                        `Private session created!\n\nInvite link: ${inviteLink}\n\nClick OK to copy link and join session, Cancel to just join.`
+                    )
+                    if(copyAndJoin) {
+                        navigator.clipboard.writeText(inviteLink)
+                        toast.success("Invite link copied to clipboard!")
+                    }
+                }
+                
                 navigate(`/session/${data.session._id}`)
             }
-        }
-    )
+        })
     }
     
     const activeSessions = (activeSessionsData?.sessions || []).filter(

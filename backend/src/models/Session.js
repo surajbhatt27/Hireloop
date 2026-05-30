@@ -28,6 +28,10 @@ const sessionSchema = new mongoose.Schema({
     callId: {
         type: String,
         default: ""
+    },
+    isPrivate: {
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true})
 

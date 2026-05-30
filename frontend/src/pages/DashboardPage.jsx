@@ -15,7 +15,7 @@ function DashboardPage() {
     const navigate = useNavigate()
     const {user} = useUser()
     const [showCreateModel, setShowCreateModel] = useState(false)
-    const [roomConfig, setRoomConfig] = useState({ problem: "", difficulty: "", isPrivate: false})
+    const [roomConfig, setRoomConfig] = useState({ problem: "", difficulty: "", isPrivate: false, duration: null})
 
     const createSessionMutation = useCreateSession()
 
@@ -28,7 +28,8 @@ function DashboardPage() {
         createSessionMutation.mutate({
             problem: roomConfig.problem, 
             difficulty: roomConfig.difficulty.toLowerCase(),
-            isPrivate: roomConfig.isPrivate || false
+            isPrivate: roomConfig.isPrivate || false,
+            duration: roomConfig.duration
         }, {
             onSuccess: (data) => {
                 setShowCreateModel(false)

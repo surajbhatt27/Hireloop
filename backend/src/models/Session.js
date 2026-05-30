@@ -32,6 +32,18 @@ const sessionSchema = new mongoose.Schema({
     isPrivate: {
         type: Boolean,
         default: false
+    },
+    duration: {
+        type: Number,   // in minutes
+        default: null
+    },
+    startedAt: {
+        type: Date,
+        default: null
+    },
+    endedAt: {
+        type: Date,
+        default: null
     }
 }, {timestamps: true})
 

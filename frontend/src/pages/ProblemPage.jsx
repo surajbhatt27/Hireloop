@@ -6,7 +6,7 @@ import {Panel, PanelGroup, PanelResizeHandle} from "react-resizable-panels"
 import ProblemDescription from '../components/ProblemDescription'
 import CodeEditorPanel from '../components/CodeEditorPanel'
 import OutputPanel from '../components/OutputPanel'
-import {executeCode} from '../lib/piston.js'
+import {executeCode} from '../lib/jdoodle.js'
 import toast from 'react-hot-toast'
 import confetti from "canvas-confetti";
 

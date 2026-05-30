@@ -1,4 +1,4 @@
-import { Code2, Clock, Users, Trophy, Loader } from "lucide-react";
+import { Code2, Clock, Users, Trophy, Loader, ClockIcon } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
@@ -55,6 +55,12 @@ function RecentSessions({ sessions, isLoading }) {
                       >
                         {session.difficulty}
                       </span>
+                      {session.duration && (
+                          <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4" />
+                              <span>{session.duration} min session</span>
+                          </div>
+                      )}
                     </div>
                   </div>
 

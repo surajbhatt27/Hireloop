@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useEndSession, useJoinSession, useSessionById } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
-import { executeCode } from "../lib/piston";
+import { executeCode } from "../lib/jdoodle";
 import Navbar from "../components/Navbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { getDifficultyBadgeClass } from "../lib/utils";
@@ -14,6 +14,8 @@ import OutputPanel from "../components/OutputPanel";
 import useStreamClient from "../hooks/useStreamClient";
 import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
 import VideoCallUI from "../components/VideoCallUI";
+import toast from "react-hot-toast";
+import SessionTimer from "../components/SessionTimer";
 
 export default function SessionPage() {
     const navigate = useNavigate();
@@ -44,6 +46,13 @@ export default function SessionPage() {
 
     const [selectedLanguage, setSelectedLanguage] = useState("javascript");
     const [code, setCode] = useState(problemData?.starterCode?.[selectedLanguage] || "");
+
+    const handleTimerExpire = () => {
+        toast.error("Session time has expired!");
+        if (isHost) {
+            endSessionMutation.mutate(id);
+        }
+    };
 
     useEffect(() => {
         if (!session || !user || loadingSession) return
@@ -124,6 +133,14 @@ export default function SessionPage() {
                                                     {session?.difficulty.slice(0, 1).toUpperCase() +
                                                         session?.difficulty.slice(1) || "Easy"}
                                                 </span>
+                                                {session?.duration && session?.startedAt && (
+                                                    <SessionTimer 
+                                                        startedAt={session.startedAt}
+                                                        duration={session.duration}
+                                                        onExpire={handleTimerExpire}
+                                                    />
+                                                )}
+
                                                 {isHost && session?.status === "active" && (
                                                     <button
                                                         onClick={handleEndSession}

@@ -1,4 +1,4 @@
-import { Code2Icon, PlusIcon } from "lucide-react";
+import { Code2Icon, FileText, PlusIcon } from "lucide-react";
 import { PROBLEMS} from "../data/problems"
 import { LoaderIcon } from "react-hot-toast";
 
@@ -90,7 +90,7 @@ function CreateSessionModel({
                     {/** Room Summary */}
                     {roomConfig.problem && (
                         <div className="alert alert-success">
-                            <Code2Icon className="size-5" />
+                            <FileText className="size-5" />
                             <div>
                                 <p className="font-semibold"> Room Summary:</p>
                                 <p>

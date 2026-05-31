@@ -5,7 +5,18 @@ import {
   SparklesIcon,
   UsersIcon,
   ZapIcon,
-  LoaderIcon
+  LoaderIcon,
+  Video,
+  ActivityIcon,
+  Radio,
+  Pause,
+  Activity,
+  Shield,
+  BadgeCheck,
+  UserRound,
+  Users,
+  CalendarHeart,
+  VideoOff
 } from 'lucide-react';
 import { Link } from "react-router"
 import {getDifficultyBadgeClass} from "../lib/utils"
@@ -19,9 +30,9 @@ function ActiveSessions({sessions, isLoading, isUserInSession}) {
           {/** Title and Icon */}
           <div className='flex items-center gap-3'>
             <div className='p-2 bg-gradient-to-br from-primary to-secondary rounded-xl'>
-              <ZapIcon className='size-5' />
+              <Video className='size-5' />
             </div>
-            <h2 className='text-2xl font-black'>Live Session</h2>
+            <h2 className='text-2xl font-black'>Live Sessions</h2>
           </div>
 
           <div className='flex items-center gap-2'>
@@ -46,7 +57,7 @@ function ActiveSessions({sessions, isLoading, isUserInSession}) {
                   {/* LEFT SIDE */}
                   <div className="flex items-center gap-4 flex-1">
                     <div className="relative size-14 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                      <Code2Icon className="size-7 text-white" />
+                      <Activity className="size-7 text-white" />
                       <div className="absolute -top-1 -right-1 size-4 bg-success rounded-full border-2 border-base-100" />
                     </div>
 
@@ -65,11 +76,11 @@ function ActiveSessions({sessions, isLoading, isUserInSession}) {
 
                       <div className="flex items-center gap-4 text-sm opacity-80">
                         <div className="flex items-center gap-1.5">
-                          <CrownIcon className="size-4" />
+                          <BadgeCheck className="size-4" />
                           <span className="font-medium">{session.host?.name}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <UsersIcon className="size-4" />
+                          <Users className="size-4" />
                           <span className="text-xs">{session.participant ? "2/2" : "1/2"}</span>
                         </div>
                         {session.participant && !isUserInSession(session) ? (
@@ -95,10 +106,10 @@ function ActiveSessions({sessions, isLoading, isUserInSession}) {
           ) : (
             <div className="text-center py-16">
               <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl flex items-center justify-center">
-                <SparklesIcon className="w-10 h-10 text-primary/50" />
+                <VideoOff className="w-10 h-10 text-primary/50" />
               </div>
               <p className="text-lg font-semibold opacity-70 mb-1">No active sessions</p>
-              <p className="text-sm opacity-50">Be the first to create one!</p>
+              <p className="text-sm opacity-50">Create your own Session</p>
             </div>
           )}
         </div>

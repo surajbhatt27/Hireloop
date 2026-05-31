@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { SparklesIcon, ArrowRightIcon } from "lucide-react";
+import { SparklesIcon, ArrowRightIcon, Calendar, CalendarDays } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils";
 
 function ProblemOfTheDay({ problems }) {
@@ -42,8 +42,8 @@ function ProblemOfTheDay({ problems }) {
             <div className="card-body p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <SparklesIcon className="size-5 text-primary" />
-                        <h3 className="font-bold">Problem of the Day</h3>
+                        <CalendarDays className="size-5 text-primary" />
+                        <h3 className="font-bold">POTD</h3>
                     </div>
                     <Link to={`/problem/${problem.id}`} className="btn btn-primary btn-sm gap-1">
                         Solve <ArrowRightIcon className="size-3" />

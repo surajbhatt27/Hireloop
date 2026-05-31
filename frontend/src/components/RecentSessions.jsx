@@ -1,4 +1,4 @@
-import { Code2, Clock, Users, Trophy, Loader, ClockIcon } from "lucide-react";
+import { Code2, Clock, Users, Trophy, Loader, ClockIcon, History, Archive, Clock3, CheckCircle2, Clock2, FolderOpen } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
@@ -8,7 +8,7 @@ function RecentSessions({ sessions, isLoading }) {
       <div className="card-body">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 bg-gradient-to-br from-accent to-secondary rounded-xl">
-            <Clock className="w-5 h-5 text-white" />
+            <History className="w-5 h-5 text-white" />
           </div>
           <h2 className="text-2xl font-black">Your Past Sessions</h2>
         </div>
@@ -46,7 +46,7 @@ function RecentSessions({ sessions, isLoading }) {
                           : "bg-gradient-to-br from-primary to-secondary"
                       }`}
                     >
-                      <Code2 className="w-6 h-6 text-white" />
+                      <CheckCircle2 className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-base mb-1 truncate">{session.problem}</h3>
@@ -56,7 +56,7 @@ function RecentSessions({ sessions, isLoading }) {
                         {session.difficulty}
                       </span>
                       {session.duration && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mt-1">
                               <Clock className="w-4 h-4" />
                               <span>{session.duration} min session</span>
                           </div>
@@ -66,7 +66,7 @@ function RecentSessions({ sessions, isLoading }) {
 
                   <div className="space-y-2 text-sm opacity-80 mb-4">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
+                      <Clock2 className="w-4 h-4" />
                       <span>
                         {formatDistanceToNow(new Date(session.createdAt), {
                           addSuffix: true,
@@ -94,7 +94,7 @@ function RecentSessions({ sessions, isLoading }) {
           ) : (
             <div className="col-span-full text-center py-16">
               <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-accent/20 to-secondary/20 rounded-3xl flex items-center justify-center">
-                <Trophy className="w-10 h-10 text-accent/50" />
+                <FolderOpen className="w-10 h-10 text-accent/50" />
               </div>
               <p className="text-lg font-semibold opacity-70 mb-1">No sessions yet</p>
               <p className="text-sm opacity-50">Start your coding journey today!</p>

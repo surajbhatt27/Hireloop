@@ -1,5 +1,5 @@
 import {Link, useLocation} from "react-router"
-import {BookOpenIcon, GitMerge, LayoutDashboardIcon} from "lucide-react"
+import {BookOpenIcon, FileCode2, GitMerge, LayoutDashboard, LayoutDashboardIcon} from "lucide-react"
 import { UserButton } from "@clerk/clerk-react";
 
 function Navbar() {
@@ -19,7 +19,7 @@ function Navbar() {
 
                     <div className='flex flex-col'>
                         <span className='font-black text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent font-mono tracking-wider'>PairUp</span>
-                        <span className='text-xs text-base-content/60 font-medium -mt-1'>Two &gt; One</span>
+                        <span className='text-xs text-base-content/60 font-medium -mt-1'>Code. Collaborate. Conquer.</span>
                     </div>
                 </Link>
 
@@ -28,7 +28,7 @@ function Navbar() {
                     <Link to={"/problems"}
                         className={`px-4 py-2.5 rounded-lg transition-transform-all duration-200 ${isActive("/problems") ? "bg-primary text-primary-content" : "hover:bg-base-200 text-base-content/70 hover:text-base-content"}`}>
                         <div className="flex items-center gap-x-2.5">
-                            <BookOpenIcon className="size-4"/>
+                            <FileCode2 className="size-4"/>
                             <span className="font-medium hidden sm:inline">Problems</span>
                         </div>
                     </Link>
@@ -37,7 +37,7 @@ function Navbar() {
                     <Link to={"/dashboard"}
                     className={`px-4 py-2.5 rounded-lg transition-transform-all duration-200 ${isActive("/dashboard") ? "bg-primary text-primary-content" : "hover:bg-base-200 text-base-content/70 hover:text-base-content"}`}>
                         <div className="flex items-center gap-x-2.5">
-                            <LayoutDashboardIcon className="size-4"/>
+                            <LayoutDashboard className="size-4"/>
                             <span className="font-medium hidden sm:inline">Dashboard</span>
                         </div>
                     </Link>

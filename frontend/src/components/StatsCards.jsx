@@ -1,4 +1,4 @@
-import { TrophyIcon, UsersIcon } from "lucide-react";
+import { Activity, FolderKanban, Radio, TrophyIcon, UsersIcon } from "lucide-react";
 
 function StatsCards({ activeSessionsCount, recentSessionsCount }) {
   return (
@@ -8,7 +8,7 @@ function StatsCards({ activeSessionsCount, recentSessionsCount }) {
         <div className="card-body">
           <div className="flex items-center justify-between mb-3">
             <div className="p-3 bg-primary/10 rounded-2xl">
-              <UsersIcon className="w-7 h-7 text-primary" />
+              <Radio className="w-7 h-7 text-primary" />
             </div>
             <div className="badge badge-primary">Live</div>
           </div>
@@ -22,7 +22,7 @@ function StatsCards({ activeSessionsCount, recentSessionsCount }) {
         <div className="card-body">
           <div className="flex items-center justify-between mb-3">
             <div className="p-3 bg-secondary/10 rounded-2xl">
-              <TrophyIcon className="w-7 h-7 text-secondary" />
+              <FolderKanban className="w-7 h-7 text-secondary" />
             </div>
           </div>
           <div className="text-4xl font-black mb-1">{recentSessionsCount}</div>

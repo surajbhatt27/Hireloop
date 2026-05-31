@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useState } from "react";
 import Navbar from "../components/Navbar"
 import { PROBLEMS } from "../data/problems.js"
-import { ChevronRightIcon, Code2Icon, FilterIcon, XIcon } from "lucide-react";
+import { ArrowUpRight, ChevronRightIcon, Code2Icon, FilterIcon, ListFilter, X, XCircle, XIcon } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils.js";
 import ProblemOfTheDay from "../components/ProblemOfTheDay";
 
@@ -57,20 +57,20 @@ function ProblemsPage() {
   };
 
   return (
-    <div className='min-h-screen bg-base-200'>
+    <div className='min-h-screen bg-base-200 m-2'>
       <Navbar />
 
       <div className="w-full px-4 py-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2">Practice Problems</h1>
+          <h1 className="text-4xl font-bold mb-2 text-primary">Practice Problems</h1>
           <p className="text-base-content/70">
-            Sharpen your coding skills with these curated problems
+            Sharpen your coding skills with these curated problems...
           </p>
         </div>
         <ProblemOfTheDay problems={problems} />
 
-        {/* STATS FOOTER */}
+        {/* STATS */}
         <div className="mb-8 card bg-base-100 shadow-lg w-full">
           <div className="card-body p-4">
             <div className="stats stats-vertical lg:stats-horizontal w-full">
@@ -88,7 +88,7 @@ function ProblemsPage() {
               >
                 <div className="stat-title">Easy</div>
                 <div className="stat-value text-success">{easyProblemsCount}</div>
-                <div className="stat-desc">↗️ {((easyProblemsCount / problems.length) * 100).toFixed(0)}%</div>
+                <div className="stat-desc"><ArrowUpRight/> {((easyProblemsCount / problems.length) * 100).toFixed(0)}%</div>
               </div>
 
               <div 
@@ -97,7 +97,7 @@ function ProblemsPage() {
               >
                 <div className="stat-title">Medium</div>
                 <div className="stat-value text-warning">{mediumProblemsCount}</div>
-                <div className="stat-desc">↗️ {((mediumProblemsCount / problems.length) * 100).toFixed(0)}%</div>
+                <div className="stat-desc"><ArrowUpRight/> {((mediumProblemsCount / problems.length) * 100).toFixed(0)}%</div>
               </div>
 
               <div 
@@ -106,7 +106,7 @@ function ProblemsPage() {
               >
                 <div className="stat-title">Hard</div>
                 <div className="stat-value text-error">{hardProblemsCount}</div>
-                <div className="stat-desc">↗️ {((hardProblemsCount / problems.length) * 100).toFixed(0)}%</div>
+                <div className="stat-desc"><ArrowUpRight/> {((hardProblemsCount / problems.length) * 100).toFixed(0)}%</div>
               </div>
             </div>
           </div>
@@ -136,7 +136,7 @@ function ProblemsPage() {
           {/* Difficulty Filter Buttons */}
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex items-center gap-2 text-base-content/60 mr-2">
-              <FilterIcon className="size-4" />
+              <ListFilter className="size-4" />
               <span className="text-sm font-medium">Filter:</span>
             </div>
             
@@ -173,7 +173,7 @@ function ProblemsPage() {
                 onClick={clearFilters}
                 className="px-3 py-2 rounded-lg text-sm bg-base-300 hover:bg-base-400 transition-colors flex items-center gap-1"
               >
-                <XIcon className="size-3" />
+                <X className="size-3" />
                 Clear
               </button>
             )}

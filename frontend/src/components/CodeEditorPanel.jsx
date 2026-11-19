@@ -22,8 +22,13 @@ function CodeEditorPanel({
     const { ytext, awareness } = collaboration ?? {}
 
     const editorRef = useRef(null)
+    const monacoRef = useRef(null)
     const bindingRef = useRef(null)
     const [partnerName, setPartnerName] = useState(null)
+    //Kept in state so the binding effect runs again once Monaco has mounted.
+    //The WebSocket usually connects long before Monaco finishes loading, so the
+    //editor is still null the first time the effect runs.
+    const [editorInstance, setEditorInstance] = useState(null)
 
     //Show who else is in the shared buffer.
     useEffect(() => {
@@ -45,6 +50,9 @@ function CodeEditorPanel({
 
     const handleMount = useCallback((editor, monaco) => {
         editorRef.current = editor;
+        monacoRef.current = monaco;
+        //Triggers the binding effect below now that there is an editor to bind.
+        setEditorInstance(editor);
 
         //Pin the line ending to LF before anything is written to the model.
         //Monaco otherwise picks the platform default, so one participant could
@@ -59,7 +67,7 @@ function CodeEditorPanel({
     useEffect(() => {
         if (!isCollaborative) return
 
-        const editor = editorRef.current
+        const editor = editorInstance
         if (!editor) return
 
         bindingRef.current?.destroy()
@@ -74,7 +82,16 @@ function CodeEditorPanel({
             new Set([editor]),
             awareness ?? null
         )
-    }, [isCollaborative, ytext, awareness])
+
+        //The binding writes the shared buffer into the model with setValue(),
+        //which puts the line endings back to the platform default. Pin them to
+        //LF again so every participant keeps the same character offsets, also
+        //after switching to another language.
+        const model = editor.getModel();
+        if (model && monacoRef.current) {
+            model.setEOL(monacoRef.current.editor.EndOfLineSequence.LF);
+        }
+    }, [isCollaborative, ytext, awareness, editorInstance])
 
     useEffect(() => {
         return () => {

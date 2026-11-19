@@ -11,14 +11,22 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
     const [channel, setChannel] = useState(null);
     const [isInitializingCall, setIsInitializingCall] = useState(true);
 
+    //Depend on these primitives instead of the whole session object.
+    //The session is refetched every few seconds, and depending on the object
+    //itself would tear down and rejoin the video call on every poll.
+    const callId = session?.callId;
+    const sessionStatus = session?.status;
+
     useEffect(() => {
         let videoCall = null;
         let chatClientInstance = null;
 
         const initCall = async () => {
-            if (!session?.callId) return;
+            if (!callId) return;
             if (!isHost && !isParticipant) return;
-            if (session.status === "completed") return;
+            if (sessionStatus === "completed") return;
+
+            setIsInitializingCall(true);
 
             try {
                 const { token, userId, userName, userImage } = await sessionApi.getStreamToken();
@@ -34,7 +42,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
 
                 setStreamClient(client);
 
-                videoCall = client.call("default", session.callId);
+                videoCall = client.call("default", callId);
                 await videoCall.join({ create: true });
                 setCall(videoCall);
 
@@ -51,7 +59,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
                 );
                 setChatClient(chatClientInstance);
 
-                const chatChannel = chatClientInstance.channel("messaging", session.callId);
+                const chatChannel = chatClientInstance.channel("messaging", callId);
                 await chatChannel.watch();
                 setChannel(chatChannel);
             } catch (error) {
@@ -62,7 +70,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
             }
         };
 
-        if (session && !loadingSession) initCall();
+        if (callId && !loadingSession) initCall();
 
         return () => {
             // iife
@@ -76,7 +84,7 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
                 }
             })();
         };
-    }, [session, loadingSession, isHost, isParticipant]);
+    }, [callId, sessionStatus, loadingSession, isHost, isParticipant]);
 
     return {
         streamClient,

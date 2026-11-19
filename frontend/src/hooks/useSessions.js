@@ -53,6 +53,17 @@ export const useJoinSession = () => {
     return result
 }
 
+export const useJoinPrivateSession = () => {
+    const result = useMutation({
+        mutationKey: ["joinPrivateSession"],
+        mutationFn:  sessionApi.joinPrivateSession,
+        onSuccess: () => toast.success("Joined session sucessfully!"),
+        onError: (error) => toast.error(error.response?.data?.message || "Failed to join session"),
+    })
+
+    return result
+}
+
 export const useEndSession = () => {
     const result = useMutation({
         mutationKey: ["endSession"],

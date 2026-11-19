@@ -1,9 +1,10 @@
 import {Inngest} from 'inngest'
 import { connectDB } from './db.js'
+import { ENV } from './env.js'
 import User from '../models/User.js'
 import { deleteStreamUser, upsertStreamUser } from './stream.js'
 
-export const inngest = new Inngest({ id: "hireloop" })
+export const inngest = new Inngest({ id: ENV.INNGEST_APP_ID })
 
 const syncUser = inngest.createFunction(
     {id: 'sync-user'},

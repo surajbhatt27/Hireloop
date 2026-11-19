@@ -1,5 +1,79 @@
 import Session from "../models/Session.js"
-import {chatClient, streamClient} from "../lib/stream.js"
+import {chatClient, streamClient, cleanupStreamSession} from "../lib/stream.js"
+
+const SESSION_MS = 60000 // 1 minute in ms, sessions store duration in minutes
+
+//A session is expired once its duration has elapsed since it actually started.
+const isExpired = (session) => {
+    if(!session.duration || !session.startedAt) return false
+    const expiresAt = new Date(session.startedAt.getTime() + session.duration * SESSION_MS)
+    return new Date() >= expiresAt
+}
+
+//Mark a session as completed and release the Stream resources it owns.
+const completeSession = async (session) => {
+    session.status = "completed"
+    session.endedAt = new Date()
+    await session.save()
+    await cleanupStreamSession(session.callId)
+}
+
+//Close out every active session whose timer has already elapsed.
+const expireStaleSessions = async () => {
+    const expired = await Session.find({
+        status: "active",
+        duration: {$ne: null},
+        startedAt: {$ne: null},
+        $expr: {
+            $lte: [
+                {$add: ["$startedAt", {$multiply: ["$duration", SESSION_MS]}]},
+                new Date()
+            ]
+        }
+    })
+
+    for (const session of expired) {
+        await completeSession(session)
+    }
+}
+
+/**
+ * Atomically claim the participant slot of a session.
+ * The `participant: null` guard makes this safe against two people joining
+ * at the same time - only one update can match.
+ */
+const claimParticipant = async (sessionId, userId) => {
+    const current = await Session.findById(sessionId)
+
+    if(!current) return {error: {status: 404, message: "Session not found"}}
+
+    if(current.status !== "active") {
+        return {error: {status: 400, message: "Cannot join a completed session"}}
+    }
+
+    if(current.host.toString() === userId.toString()) {
+        return {error: {status: 400, message: "Host cannot join their own session"}}
+    }
+
+    const setFields = {participant: userId}
+
+    //The timer starts when the second person joins, not when the room is created.
+    if(current.duration && !current.startedAt) {
+        setFields.startedAt = new Date()
+    }
+
+    const claimed = await Session.findOneAndUpdate(
+        {_id: sessionId, status: "active", participant: null},
+        {$set: setFields},
+        {new: true}
+    )
+
+    if(!claimed) {
+        return {error: {status: 409, message: "Session is full"}}
+    }
+
+    return {session: claimed}
+}
 
 export async function createSession(req, res) {
     try {
@@ -14,8 +88,8 @@ export async function createSession(req, res) {
         //generate a unique call id for the stream video
         const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
 
-        // create session in db
-        const session = await Session.create({problem, difficulty, host:userId, callId, isPrivate: isPrivate || false, duration: duration || null, startedAt: duration ? new Date() : null })
+        // create session in db - startedAt stays null until a participant joins
+        const session = await Session.create({problem, difficulty, host:userId, callId, isPrivate: isPrivate || false, duration: duration || null, startedAt: null})
 
         // create stream video call
         await streamClient.video.call("default", callId).getOrCreate({
@@ -44,6 +118,9 @@ export async function createSession(req, res) {
 
 export async function getActiveSessions(_, res) {
     try {
+        //Rooms whose timer ran out should not be advertised as joinable.
+        await expireStaleSessions()
+
         const sessions = await Session.find({status: "active", isPrivate: false })
         .populate("host", "name profileImage email clerkId")
         .populate("participant", "name profileImage email clerkId")
@@ -64,22 +141,8 @@ export async function joinPrivateSession(req, res) {
         const userId = req.user._id
         const clerkId = req.user.clerkId
 
-        const session = await Session.findById(id)
-
-        if(!session) return res.status(404).json({message: "Session not found"})
-
-        if(session.status !== "active") {
-            return res.status(400).json({message: "Cannot join a completed session"})
-        }
-
-        if(session.host.toString() === userId.toString()) {
-            return res.status(400).json({message: "Host cannot join their own session"})
-        }
-        
-        if(session.participant) return res.status(409).json({message: "Session is full"})
-
-        session.participant = userId
-        await session.save()
+        const {session, error} = await claimParticipant(id, userId)
+        if(error) return res.status(error.status).json({message: error.message})
 
         const channel = chatClient.channel("messaging", session.callId)
         await channel.addMembers([clerkId])
@@ -99,6 +162,8 @@ export async function getMyRecentSessions(req, res) {
             status: "completed",
             $or: [{host: userId}, {participant: userId}]
         })
+        .populate("host", "name profileImage email clerkId")
+        .populate("participant", "name profileImage email clerkId")
         .sort({createdAt: -1})
         .limit(20)
 
@@ -119,13 +184,8 @@ export async function getSessionById(req, res) {
         if(!session) return res.status(404).json({message: "Session not found"})
 
         // Check if session has expired
-        if(session.duration && session.startedAt && session.status === "active") {
-            const expiresAt = new Date(session.startedAt.getTime() + session.duration * 60000)
-            if(new Date() > expiresAt) {
-                session.status = "completed"
-                session.endedAt = new Date()
-                await session.save()
-            }
+        if(session.status === "active" && isExpired(session)) {
+            await completeSession(session)
         }
 
         res.status(200).json({session})
@@ -141,28 +201,16 @@ export async function joinSession(req, res) {
         const userId = req.user._id
         const clerkId = req.user.clerkId
 
-        const session = await Session.findById(id)
+        const existing = await Session.findById(id)
+        if(!existing) return res.status(404).json({message: "Session not found"})
 
-        if(!session) return res.status(404).json({message: "Session not found"})
-
-        if(session.status !== "active") {
-            return res.status(400).json({message: "Cannot join a completed session"})
+        //Private rooms are only reachable through their invite link.
+        if(existing.isPrivate) {
+            return res.status(403).json({message: "This is a private session. Use the invite link to join"})
         }
 
-        if(session.host.toString() === userId.toString()) {
-            return res.status(400).json({message: "Host cannot join their own session as participant"})
-        }
-        
-        //check if session is already full.
-        if(session.participant) return res.status(409).json({message: "Session is full"})
-
-        session.participant = userId
-
-        if(session.duration && !session.startedAt) {
-            session.startedAt = new Date()
-        }
-
-        await session.save()
+        const {session, error} = await claimParticipant(id, userId)
+        if(error) return res.status(error.status).json({message: error.message})
 
         const channel = chatClient.channel("messaging", session.callId)
         await channel.addMembers([clerkId])
@@ -192,16 +240,8 @@ export async function endSession(req, res) {
             return res.status(400).json({message: "Session is already completed"})
         }
 
-        //delete stream video call
-        const call = streamClient.video.call("default", session.callId)
-        await call.delete({hard: true})
-
-        //delete stream chat channel
-        const channel = chatClient.channel("messaging", session.callId)
-        await channel.delete()
-
-        session.status = "completed"
-        await session.save()
+        //delete stream video call + chat channel, mark the session as completed
+        await completeSession(session)
 
         res.status(200).json({session, message: "Session ended successfully"})
     } catch (error) {

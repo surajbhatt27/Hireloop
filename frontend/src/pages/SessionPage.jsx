@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useEndSession, useJoinSession, useSessionById } from "../hooks/useSessions";
+import { useEndSession, useJoinPrivateSession, useJoinSession, useSessionById } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
 import { executeCode } from "../lib/jdoodle";
 import Navbar from "../components/Navbar";
@@ -27,7 +27,11 @@ export default function SessionPage() {
     const { data: sessionData, isLoading: loadingSession, refetch } = useSessionById(id)
 
     const joinSessionMutation = useJoinSession()
+    const joinPrivateSessionMutation = useJoinPrivateSession()
     const endSessionMutation = useEndSession()
+
+    //Guard so a re-render cannot fire a second join request.
+    const joinAttempted = useRef(false)
 
     const session = sessionData?.session;
     const isHost = session?.host?.clerkId === user?.id;
@@ -57,9 +61,21 @@ export default function SessionPage() {
     useEffect(() => {
         if (!session || !user || loadingSession) return
         if (isHost || isParticipant) return
+        if (joinAttempted.current) return
+        joinAttempted.current = true
 
-        joinSessionMutation.mutate(id, { onSuccess: refetch })
-    }, [session, user, loadingSession, isHost, isParticipant, id, joinSessionMutation, refetch])
+        const options = {
+            onSuccess: refetch,
+            onError: () => { joinAttempted.current = false }
+        }
+
+        //Private rooms are only reachable through their invite link.
+        if (session.isPrivate) {
+            joinPrivateSessionMutation.mutate(id, options)
+        } else {
+            joinSessionMutation.mutate(id, options)
+        }
+    }, [session, user, loadingSession, isHost, isParticipant, id, joinSessionMutation, joinPrivateSessionMutation, refetch])
 
     useEffect(() => {
         if (!session || loadingSession) return

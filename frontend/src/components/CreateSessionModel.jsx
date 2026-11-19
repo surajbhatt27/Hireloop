@@ -30,12 +30,14 @@ function CreateSessionModel({
 
                         <select
                             className="select w-full"
-                            value={roomConfig.problem}
+                            value={roomConfig.problemId}
                             onChange={(e) => {
-                                const selectedProblem = problems.find((p) => p.title === e.target.value);
+                                const selectedProblem = problems.find((p) => p.id === e.target.value);
                                 setRoomConfig({
+                                    ...roomConfig,
                                     difficulty: selectedProblem.difficulty,
-                                    problem: e.target.value,
+                                    problem: selectedProblem.title,
+                                    problemId: selectedProblem.id,
                                 })
                             }}
                         >
@@ -44,7 +46,7 @@ function CreateSessionModel({
                             </option>
 
                             {problems.map((problem) => (
-                                <option key={problem.id} value={problem.title}>
+                                <option key={problem.id} value={problem.id}>
                                     {problem.title} ({problem.difficulty})
                                 </option>
                             ))}
@@ -88,8 +90,7 @@ function CreateSessionModel({
                     </div>
 
                     {/** Room Summary */}
-                    {roomConfig.problem && (
-                        <div className="alert alert-success">
+                    {roomConfig.problem && (                        <div className="alert alert-success">
                             <FileText className="size-5" />
                             <div>
                                 <p className="font-semibold"> Room Summary:</p>

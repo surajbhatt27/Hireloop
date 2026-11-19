@@ -12,6 +12,7 @@ import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
 
 import useStreamClient from "../hooks/useStreamClient";
+import useCollaboration from "../hooks/useCollaboration";
 import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
 import VideoCallUI from "../components/VideoCallUI";
 import toast from "react-hot-toast";
@@ -44,12 +45,31 @@ export default function SessionPage() {
         isParticipant
     );
 
-    const problemData = session?.problem
-        ? Object.values(PROBLEMS).find((p) => p.title === session.problem)
-        : null;
+    const problemData = session?.problemId
+        ? PROBLEMS[session.problemId]
+        : session?.problem
+            ? Object.values(PROBLEMS).find((p) => p.title === session.problem)
+            : null;
 
     const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-    const [code, setCode] = useState(problemData?.starterCode?.[selectedLanguage] || "");
+
+    //Shared collaborative buffer for this session.
+    const { ydoc, status: collabStatus, isSynced, awareness } = useCollaboration({
+        sessionId: id,
+    });
+
+    //Each language gets its own shared buffer inside the session document.
+    const ytext = ydoc.getText(`code:${selectedLanguage}`);
+
+    //Mirror of the live buffer, so the Run button always sends the current code.
+    const codeRef = useRef("");
+
+    useEffect(() => {
+        const update = () => { codeRef.current = ytext.toString(); };
+        update();
+        ytext.observe(update);
+        return () => ytext.unobserve(update);
+    }, [ytext]);
 
     const handleTimerExpire = () => {
         toast.error("Session time has expired!");
@@ -83,25 +103,17 @@ export default function SessionPage() {
         if (session.status === "completed") navigate("/dashboard")
     }, [session, loadingSession, navigate])
 
-    useEffect(() => {
-        if (problemData?.starterCode?.[selectedLanguage]) {
-            setCode(problemData.starterCode[selectedLanguage]);
-        }
-    }, [problemData, selectedLanguage]);
-
     const handleLanguageChange = (e) => {
         const newLang = e.target.value;
         setSelectedLanguage(newLang);
-        const starterCode = problemData?.starterCode?.[newLang] || "";
-        setCode(starterCode);
         setOutput(null);
     };
 
-    const handleRunCode = async () => {
+    const handleRunCode = async (source) => {
         setIsRunning(true);
         setOutput(null);
 
-        const result = await executeCode(selectedLanguage, code);
+        const result = await executeCode(selectedLanguage, source ?? codeRef.current);
         setOutput(result);
         setIsRunning(false);
     };
@@ -259,11 +271,11 @@ export default function SessionPage() {
                                     <Panel defaultSize={70} minSize={30}>
                                         <CodeEditorPanel
                                             selectedLanguage={selectedLanguage}
-                                            code={code}
                                             isRunning={isRunning}
                                             onLanguageChange={handleLanguageChange}
-                                            onCodeChange={(value) => setCode(value)}
                                             onRunCode={handleRunCode}
+                                            collaboration={{ ytext, awareness, isSynced, status: collabStatus }}
+                                            getCode={() => codeRef.current}
                                         />
                                     </Panel>
 

@@ -8,6 +8,7 @@ import {clerkMiddleware} from '@clerk/express'
 import chatRoutes from './routes/chatRoutes.js'
 import sessionRoutes from './routes/sessionRoute.js'
 import codeRoutes from './routes/codeRoutes.js';
+import {attachCollaborationServer} from './lib/collaboration.js'
 
 const app = express()
 
@@ -33,9 +34,12 @@ app.get('/health', (req, res) => {
 const startServer = async () => {
     try {
         await connectDB()
-        app.listen(ENV.PORT, () => {
+        const server = app.listen(ENV.PORT, () => {
             console.log("Server is running on port:", ENV.PORT);
         })
+
+        //Real-time collaborative editing runs on the same server, under /ws.
+        attachCollaborationServer(server)
     } catch (error) {
         console.error("❌Error starting the server", error);
     }

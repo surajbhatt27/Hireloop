@@ -67,6 +67,72 @@ Simulate real interview pressure with optional timers.
 | Video Calling    | Stream Video SDK             |
 | Code Editor      | Monaco Editor                |
 | Code Execution   | JDoodle API                  |
+| Collaborative Editing | Yjs (CRDT), y-websocket  |
+| Realtime Transport | WebSocket (`ws`)           |
+
+
+## Collaborative Editing
+
+Both participants in a session edit the **same buffer**. This is a real CRDT
+(Yjs), not last-write-wins, so simultaneous edits merge cleanly instead of one
+person overwriting the other.
+
+### How it works
+
+```
+Browser A ──┐                        ┌── Browser B
+  Monaco     │                        │   Monaco
+    ↕        │                        │     ↕
+  Y.Doc ── Y.Text ("code:<lang>") ────│
+    ↕                                ↕
+  WebsocketProvider (/ws/<sessionId>?token=...)
+    ↕                                ↕
+        WebSocket server (backend)
+                  ↕
+              Y.Doc (room per session)
+```
+
+* **One room per session.** The room name is the session id, so a session's
+  buffer is completely isolated from every other session.
+* **Server-side seeding.** When a room is created the server seeds one shared
+  buffer per language with the problem's starter code. Only the server ever
+  writes the seed, so there is no race where two clients seed the buffer and
+  end up with the code twice.
+* **Per-language buffers.** Switching language switches which shared buffer is
+  bound, so a Python solution never overwrites the JavaScript one.
+* **Presence.** Each participant's cursor and selection are shared through
+  Yjs awareness, and the editor shows who is in the buffer.
+* **Access control.** The WebSocket handshake verifies the Clerk session token
+  and rejects anyone who is not the host or participant of that session.
+
+### Running it locally
+
+The collaboration server runs on the backend itself, under `/ws`:
+
+```bash
+# backend
+npm run dev
+
+# frontend
+npm run dev
+```
+
+Vite proxies `/ws` through to the backend in development. In production set
+`VITE_WS_URL` to your backend's public WebSocket URL, because a static host
+cannot proxy WebSocket connections:
+
+```bash
+VITE_WS_URL=wss://your-backend.onrender.com/ws
+```
+
+### Tests
+
+```bash
+cd backend && npm test
+```
+
+Runs a two-client convergence test: seeding, propagation, concurrent edits,
+late joiners, presence, room isolation and rejected tokens.
 
 
 ## What I Learned

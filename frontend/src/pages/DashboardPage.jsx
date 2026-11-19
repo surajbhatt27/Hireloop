@@ -2,6 +2,7 @@ import {useNavigate,} from "react-router"
 import {useUser} from "@clerk/clerk-react"
 import { useState } from "react"
 import {useActiveSession, useMyRecentSession, useCreateSession} from "../hooks/useSessions"
+import { PROBLEMS } from "../data/problems"
 
 import Navbar from "../components/Navbar"
 import WelcomeSection from "../components/WelcomeSection"
@@ -15,7 +16,7 @@ function DashboardPage() {
     const navigate = useNavigate()
     const {user} = useUser()
     const [showCreateModel, setShowCreateModel] = useState(false)
-    const [roomConfig, setRoomConfig] = useState({ problem: "", difficulty: "", isPrivate: false, duration: null})
+    const [roomConfig, setRoomConfig] = useState({ problem: "", problemId: "", difficulty: "", isPrivate: false, duration: null})
 
     const createSessionMutation = useCreateSession()
 
@@ -26,10 +27,14 @@ function DashboardPage() {
         if(!roomConfig.problem || !roomConfig.difficulty) return
 
         createSessionMutation.mutate({
-            problem: roomConfig.problem, 
+            problem: roomConfig.problem,
+            problemId: roomConfig.problemId,
             difficulty: roomConfig.difficulty.toLowerCase(),
             isPrivate: roomConfig.isPrivate || false,
-            duration: roomConfig.duration
+            duration: roomConfig.duration,
+            //The backend seeds the shared buffers with this, so both
+            //participants start from the same starter code.
+            starterCode: PROBLEMS[roomConfig.problemId]?.starterCode || {}
         }, {
             onSuccess: (data) => {
                 setShowCreateModel(false)

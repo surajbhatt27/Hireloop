@@ -5,6 +5,15 @@ const sessionSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    problemId: {
+        type: String,
+        default: null
+    },
+    starterCode: {
+        type: Map,
+        of: String,
+        default: () => ({})
+    },
     difficulty: {
         type: String,
         enum: ["easy", "medium", "hard"],

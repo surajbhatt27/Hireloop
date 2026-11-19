@@ -5,23 +5,30 @@
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "test": "node test/collaboration.test.mjs"
   },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/backend": "^2.33.9",
     "@clerk/express": "^1.7.41",
     "@stream-io/node-sdk": "^0.7.12",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "inngest": "^3.44.3",
+    "lib0": "^0.2.120",
     "mongoose": "^8.19.1",
-    "stream-chat": "^9.24.0"
+    "stream-chat": "^9.24.0",
+    "ws": "^8.23.0",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.33"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "y-websocket": "^3.1.0"
   }
 }

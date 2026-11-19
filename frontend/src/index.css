@@ -334,6 +334,26 @@
             1px solid
             oklch(78% 0.19 145 / 0.08);
     }
+
+    /* =========================================================
+        COLLABORATIVE EDITING
+        Marks the other participant's selection and cursor.
+        y-monaco names the classes with the client id appended,
+        so these match on the class prefix.
+    ========================================================== */
+
+    [class*="yRemoteSelection-"] {
+        background-color:
+            oklch(72% 0.14 180 / 0.22);
+    }
+
+    [class*="yRemoteSelectionHead-"] {
+        border-left:
+            2px solid
+            oklch(72% 0.14 180);
+
+        margin-left: -1px;
+    }
 }
 
 @layer utilities {

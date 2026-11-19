@@ -1,7 +1,34 @@
 import Session from "../models/Session.js"
 import {chatClient, streamClient, cleanupStreamSession} from "../lib/stream.js"
+import {closeCollaborationRoom} from "../lib/collaboration.js"
 
 const SESSION_MS = 60000 // 1 minute in ms, sessions store duration in minutes
+
+const MAX_LANGUAGES = 20
+const MAX_STARTER_BYTES = 20000
+
+/**
+ * Sanitize the starter code map sent by the client.
+ * It is used to seed the shared buffers, so keep it small and string-only.
+ */
+const sanitizeStarterCode = (starterCode) => {
+    if (!starterCode || typeof starterCode !== 'object') return {}
+
+    const clean = {}
+    let count = 0
+
+    for (const [language, code] of Object.entries(starterCode)) {
+        if (count >= MAX_LANGUAGES) break
+        if (typeof code !== 'string' || code.length === 0) continue
+        if (code.length > MAX_STARTER_BYTES) continue
+        if (!/^[a-z0-9#+._-]{1,32}$/i.test(language)) continue
+
+        clean[language] = code
+        count++
+    }
+
+    return clean
+}
 
 //A session is expired once its duration has elapsed since it actually started.
 const isExpired = (session) => {
@@ -16,6 +43,8 @@ const completeSession = async (session) => {
     session.endedAt = new Date()
     await session.save()
     await cleanupStreamSession(session.callId)
+    //Disconnect everyone from the collaborative editor.
+    closeCollaborationRoom(session._id)
 }
 
 //Close out every active session whose timer has already elapsed.
@@ -77,7 +106,7 @@ const claimParticipant = async (sessionId, userId) => {
 
 export async function createSession(req, res) {
     try {
-        const {problem, difficulty, isPrivate, duration} = req.body
+        const {problem, problemId, difficulty, isPrivate, duration, starterCode} = req.body
         const userId = req.user._id
         const clerkId = req.user.clerkId
 
@@ -89,7 +118,17 @@ export async function createSession(req, res) {
         const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
 
         // create session in db - startedAt stays null until a participant joins
-        const session = await Session.create({problem, difficulty, host:userId, callId, isPrivate: isPrivate || false, duration: duration || null, startedAt: null})
+        const session = await Session.create({
+            problem,
+            problemId: problemId || null,
+            starterCode: sanitizeStarterCode(starterCode),
+            difficulty,
+            host:userId,
+            callId,
+            isPrivate: isPrivate || false,
+            duration: duration || null,
+            startedAt: null
+        })
 
         // create stream video call
         await streamClient.video.call("default", callId).getOrCreate({
